@@ -15,5 +15,8 @@
         "sslClientKeyStore":"",
         "sslClientKeyStorePassphrase":"",
         "sslCaCert":""
-    }
+    },
+    "autoLoginEnabled":false,
+    "autoLoginUsername":"",
+    "autoLoginPassword":""
 }

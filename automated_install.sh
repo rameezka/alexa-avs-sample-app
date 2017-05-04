@@ -587,6 +587,42 @@ cd $Wake_Word_Agent_Loc/tst && cmake . && make -j4
 chown -R $User:$Group $Origin
 chown -R $User:$Group /home/$User/.asoundrc
 
+if [ "$Auto_Start_Enabled" = "true" ]; then
+echo "========== Installing Autostart Scripts =========="
+# generate run scripts in project folders
+echo "Copying over start scripts into project folders"
+printf "#!/bin/bash\ncd $Companion_Service_Loc\nnpm start > $Companion_Service_Loc/companion.log 2>&1\n" | tee $Companion_Service_Loc/companion.sh
+printf "#!/bin/bash\ncd $Java_Client_Loc\nmvn exec:exec > $Java_Client_Loc/javaclient.log 2>&1\n" | tee $Java_Client_Loc/javaclient.sh
+printf "#!/bin/bash\ncd $Wake_Word_Agent_Loc/src\n./wakeWordAgent -e sensory > $Wake_Word_Agent_Loc/src/wakeword.log 2>&1\n" | tee $Wake_Word_Agent_Loc/src/wakeword.sh
+# make them executable
+echo "Configuring file permissions for start scripts"
+sudo chmod +x $Companion_Service_Loc/companion.sh
+sudo chmod +x $Java_Client_Loc/javaclient.sh
+sudo chmod +x $Wake_Word_Agent_Loc/src/wakeword.sh
+sudo chmod +x $Wake_Word_Agent_Loc/src/renewLicense.sh
+
+# create systemd services
+echo "Generating systemd services..."
+printf "[Unit]\nDescription=Alexa Companion Service\nAfter=multi-user.target\n\n[Service]\nUser=pi\nRestart=always\nExecStart=/bin/bash $Companion_Service_Loc/companion.sh\n\n[Install]\nWantedBy=multi-user.target\n" | sudo tee /lib/systemd/system/companion.service
+printf "[Unit]\nDescription=Alexa Java Client\nAfter=multi-user.target\n\n[Service]\nUser=pi\nRestart=always\nExecStart=/bin/bash $Java_Client_Loc/javaclient.sh\n\n[Install]\nWantedBy=multi-user.target\n" | sudo tee /lib/systemd/system/javaclient.service
+printf "[Unit]\nDescription=Alexa Wake Word Agent\nAfter=multi-user.target\n\n[Service]\nUser=pi\nRestart=always\nExecStart=/bin/bash $Wake_Word_Agent_Loc/src/wakeword.sh\n\n[Install]\nWantedBy=multi-user.target\n" | sudo tee /lib/systemd/system/wakeword.service
+echo "Configurung file permissions for services"
+sudo chmod 644 /lib/systemd/system/companion.service
+sudo chmod 644 /lib/systemd/system/javaclient.service
+sudo chmod 644 /lib/systemd/system/wakeword.service
+echo "Reloading systemd..."
+sudo systemctl daemon-reload
+echo "Enabling services..."
+sudo systemctl enable companion.service
+sudo systemctl enable javaclient.service
+
+cd $Java_Client_Loc
+wget https://github.com/mozilla/geckodriver/releases/download/v0.16.1/geckodriver-v0.16.1-arm7hf.tar.gz
+tar -xvzf geckodriver-v0.16.1-arm7hf.tar.gz
+# Copy geckodriver to /usr/local/bin
+sudo cp $Java_Client_Loc/geckodriver /usr/local/bin/
+export PATH=$PATH:/usr/local/bin/geckodriver
+
 echo ""
 echo '============================='
 echo '*****************************'

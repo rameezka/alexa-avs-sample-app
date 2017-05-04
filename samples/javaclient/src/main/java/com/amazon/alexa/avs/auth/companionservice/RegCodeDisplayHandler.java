@@ -38,24 +38,26 @@ public class RegCodeDisplayHandler {
         String regUrl =
             deviceConfig.getCompanionServiceInfo().getServiceUrl() + "/provision/" + regCode;
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-            int selected = dialogFactory.showYesNoDialog(title,
+           /* int selected = dialogFactory.showYesNoDialog(title,
                 "Please register your device by visiting the following URL in "
                     + "a web browser and follow the instructions:\n" + regUrl
                     + "\n\n Would you like to open the URL automatically in your default browser?");
-            if (selected == JOptionPane.YES_OPTION) {
+            //if (selected == JOptionPane.YES_OPTION) {*/
                 try {
                     Desktop.getDesktop().browse(new URI(regUrl));
+                    AutoLogin autoLogin = new AutoLogin(deviceConfig);
+			        autoLogin.login(regUrl);
                 } catch (Exception e) {
                     // Ignore and proceed
                 }
                 title = "Click OK after Registering/Authenticating Device";
-                dialogFactory.showInformationalDialog(title,
+                /*dialogFactory.showInformationalDialog(title,
                     "If a browser window did not open, please copy and paste the below URL into a "
                         + "web browser, and follow the instructions:\n" + regUrl
-                        + "\n\n Click the OK button when finished.");
-            } else {
-                handleAuthenticationCopyToClipboard(title, regUrl);
-            }
+                        + "\n\n Click the OK button when finished.");*/
+            //} else {
+             //   handleAuthenticationCopyToClipboard(title, regUrl);
+            //}
         } else {
             handleAuthenticationCopyToClipboard(title, regUrl);
         }
