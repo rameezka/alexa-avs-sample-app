@@ -596,6 +596,10 @@ chown -R $User:$Group /home/$User/.asoundrc
 
 if [ "$Auto_Start_Enabled" = "true" ]; then
 echo "========== Installing Autostart Scripts =========="
+# remove chromium, install iceweasel
+sudo apt-get uninstall chromium-browser
+sudo apt-get install iceweasel
+
 # generate run scripts in project folders
 echo "Copying over start scripts into project folders"
 printf "#!/bin/bash\ncd $Companion_Service_Loc\nnpm start > $Companion_Service_Loc/companion.log 2>&1\n" | tee $Companion_Service_Loc/companion.sh
