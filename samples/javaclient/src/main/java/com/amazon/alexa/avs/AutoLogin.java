@@ -4,13 +4,19 @@ import com.amazon.alexa.avs.config.DeviceConfig;
 
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.StaleElementReferenceException;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
+
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.UnexpectedAlertBehaviour;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.CapabilityType;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -47,8 +53,10 @@ public class AutoLogin {
 		Logger.getLogger("com.gargoylesoftware.htmlunit").setLevel(Level.OFF);
 		Logger.getLogger("org.apache.commons.httpclient").setLevel(Level.OFF);
 			    
-	    HtmlUnitDriver driver = new HtmlUnitDriver(BrowserVersion.CHROME);
-		//WebDriver driver = new ChromeDriver();
+	    //HtmlUnitDriver driver = new HtmlUnitDriver(BrowserVersion.FIREFOX_45);
+        DesiredCapabilities handlSSLErr = DesiredCapabilities.htmlUnit();
+        handlSSLErr.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+        WebDriver driver = new HtmlUnitDriver(handlSSLErr);
 		
 		driver.get(url);
 		
@@ -89,7 +97,7 @@ public class AutoLogin {
 		WebElement passwordBox = driver.findElement(By.id("ap_password"));
 		passwordBox.sendKeys(autoLoginPassword);
 
-		driver.setJavascriptEnabled(true);
+		//driver.setJavascriptEnabled(true);
 		passwordBox.submit();
 		
 		// wait for page to load

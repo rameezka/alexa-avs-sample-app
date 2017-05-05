@@ -541,6 +541,13 @@ if [ -f /home/$User/.asoundrc ]; then
 fi
 printf "pcm.!default {\n  type asym\n   playback.pcm {\n     type plug\n     slave.pcm \"hw:0,0\"\n   }\n   capture.pcm {\n     type plug\n     slave.pcm \"hw:1,0\"\n   }\n}" >> /home/$User/.asoundrc
 
+sudo adduser pulse audio
+sudo adduser root audio
+sudo adduser pi pulse-access
+
+printf "[Unit]\nDescription=PulseAudio Daemon\n\n[Install]\nWantedBy=multi-user.target\n\n[Service]\nType=simple\nPrivateTmp=true\nExecStart=/usr/bin/pulseaudio --system --realtime --disallow-exit --no-cpu-limit" | sudo tee /etc/systemd/system/pulseaudio.service
+sudo systemctl enable pulseaudio.service
+
 echo "========== Installing CMake =========="
 sudo apt-get install -y cmake
 sudo ldconfig
@@ -602,19 +609,12 @@ sudo chmod +x $Wake_Word_Agent_Loc/src/wakeword.sh
 sudo chmod +x $Wake_Word_Agent_Loc/src/renewLicense.sh
 
 # create systemd services
-echo "Generating systemd services..."
-printf "[Unit]\nDescription=Alexa Companion Service\nAfter=multi-user.target\n\n[Service]\nUser=pi\nRestart=always\nExecStart=/bin/bash $Companion_Service_Loc/companion.sh\n\n[Install]\nWantedBy=multi-user.target\n" | sudo tee /lib/systemd/system/companion.service
-printf "[Unit]\nDescription=Alexa Java Client\nAfter=multi-user.target\n\n[Service]\nUser=pi\nRestart=always\nExecStart=/bin/bash $Java_Client_Loc/javaclient.sh\n\n[Install]\nWantedBy=multi-user.target\n" | sudo tee /lib/systemd/system/javaclient.service
-printf "[Unit]\nDescription=Alexa Wake Word Agent\nAfter=multi-user.target\n\n[Service]\nUser=pi\nRestart=always\nExecStart=/bin/bash $Wake_Word_Agent_Loc/src/wakeword.sh\n\n[Install]\nWantedBy=multi-user.target\n" | sudo tee /lib/systemd/system/wakeword.service
-echo "Configurung file permissions for services"
-sudo chmod 644 /lib/systemd/system/companion.service
-sudo chmod 644 /lib/systemd/system/javaclient.service
-sudo chmod 644 /lib/systemd/system/wakeword.service
-echo "Reloading systemd..."
-sudo systemctl daemon-reload
-echo "Enabling services..."
-sudo systemctl enable companion.service
-sudo systemctl enable javaclient.service
+echo "Adding startup scripts to ./config/lxsession/LXDE-pi/autostart..."
+printf "@$Companion_Service_Loc/companion.sh" >> ./config/lxsession/LXDE-pi/autostart
+printf "@$Java_Client_Loc/javaclient.sh" >> ./config/lxsession/LXDE-pi/autostart
+printf "@$Wake_Word_Agent_Loc/src/wakeword.sh" >> ./config/lxsession/LXDE-pi/autostart
+
+
 
 cd $Java_Client_Loc
 wget https://github.com/mozilla/geckodriver/releases/download/v0.16.1/geckodriver-v0.16.1-arm7hf.tar.gz

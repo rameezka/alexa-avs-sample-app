@@ -22,6 +22,7 @@ import javax.swing.JOptionPane;
 
 import com.amazon.alexa.avs.config.DeviceConfig;
 import com.amazon.alexa.avs.ui.DialogFactory;
+import com.amazon.alexa.avs.AutoLogin;
 
 public class RegCodeDisplayHandler {
 
