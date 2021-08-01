@@ -5,13 +5,13 @@
 #-------------------------------------------------------
 
 # This is the name given to your device or mobile app in the Amazon developer portal. To look this up, navigate to https://developer.amazon.com/edw/home.html. It may be labeled Device Type ID.
-ProductID=YOUR_PRODUCT_ID_HERE
+ProductID=alexapc
 
 # Retrieve your client ID from the web settings tab within the developer console: https://developer.amazon.com/edw/home.html
-ClientID=YOUR_CLIENT_ID_HERE
+ClientID=amzn1.application-oa2-client.76d5d74ff1cf47a19f968f566dd4325c
 
 # Retrieve your client secret from the web settings tab within the developer console: https://developer.amazon.com/edw/home.html
-ClientSecret=YOUR_CLIENT_SECRET_HERE
+ClientSecret=a4fcf877004deb64a5c65b463854e5af5e0f4b2974642ab4ee0aa59746291efa
 
 #-------------------------------------------------------
 # No need to change anything below this...
